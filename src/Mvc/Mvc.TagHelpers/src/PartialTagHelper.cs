@@ -3,6 +3,7 @@
 
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -28,6 +29,7 @@ public class PartialTagHelper : TagHelper
 
     private readonly ICompositeViewEngine _viewEngine;
     private readonly IViewBufferScope _viewBufferScope;
+    private ViewDataDictionary _viewData;
 
     /// <summary>
     /// Creates a new <see cref="PartialTagHelper"/>.
@@ -91,7 +93,26 @@ public class PartialTagHelper : TagHelper
     /// <summary>
     /// A <see cref="ViewDataDictionary"/> to pass into the partial view.
     /// </summary>
-    public ViewDataDictionary ViewData { get; set; }
+    [HtmlAttributeName("view-data", DictionaryAttributePrefix = "view-data-")]
+    public ViewDataDictionary ViewData
+    {
+        get
+        {
+            if (_viewData == null)
+            {
+                _viewData = new ViewDataDictionary<object>(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = ResolveModel()
+                };
+            }
+
+            return _viewData;
+        }
+        set
+        {
+            _viewData = value;
+        }
+    }
 
     /// <summary>
     /// Gets the <see cref="Rendering.ViewContext"/> of the executing view.

@@ -1,0 +1,9 @@
+@page
+
+<h3>ViewData Values</h3>
+<ul>
+  @foreach (var key in ViewData.Keys)
+  {
+    <li><strong>@key:</strong> @ViewData[key]</li>
+  }
+</ul>
